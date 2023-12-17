@@ -10,13 +10,13 @@ import {
   Select
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
 import './index.scss'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { useState, useRef } from 'react'
-import { handlePublishAPI } from '@/apis/article';
+import { useState, useRef, useEffect } from 'react'
+import { handlePublishAPI , getArticleDetailAPI} from '@/apis/article';
 import { useChannel } from '@/hooks/useChannel'
+import { useSearchParams } from 'react-router-dom'
 
 
 const Publish = () => {
@@ -46,7 +46,6 @@ const Publish = () => {
       return file
     })
     setFileList(fileList)
-    //console.log('info',info)
     fileListRef.current = fileList
   }
 
@@ -66,25 +65,33 @@ const Publish = () => {
       setFileList(fileListRef.current)
     }
   }
-
-
+  const [form] = Form.useForm();
+  const [searchParams] = useSearchParams();
+  const articleId = searchParams.get('id');
+  useEffect(()=>{
+    async function handleArticleDetail(){
+      const res = await getArticleDetailAPI(articleId);
+      form.setFieldsValue({...res.data,type:res.data.cover.type})
+      setImgCount(res.data.cover.type);
+      setFileList(res.data.cover.images.map(url=> {return {url}}))
+    }
+    if(articleId){
+      handleArticleDetail();
+    }
+  },[articleId,form])
   return (
     <div className="publish">
       <Card
         title={
-          <Breadcrumb separator=">">
-            <Breadcrumb.Item>
-              <Link to="/home">首页</Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>发布文章</Breadcrumb.Item>
+          <Breadcrumb separator=">" items={[{ title: '首页',href: '/', },{title:articleId?'编辑文章':'发布文章'}]}>
           </Breadcrumb>
         }
       >
         <Form
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
-          initialValues={{ content: '', type: 1 }}
           onFinish={onFinish}
+          form={form}
         >
           <Form.Item
             label="标题"

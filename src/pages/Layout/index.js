@@ -33,7 +33,6 @@ const GeekLayout = () => {
     const location = useLocation();
     const onMenuClick=(route)=>{
         navigate(route.key)
-        console.log('location',location)
     }
     const dispatch = useDispatch();
     useEffect(()=>{

@@ -15,3 +15,26 @@ export function handlePublishAPI(data){
         data,
     })
 }
+
+
+export function getArticleAPI(data){
+    return request({
+        url:'/mp/articles',
+        method:'GET',
+        params:data,
+    })
+}
+
+export function deleteArticleAPI(data){
+    return request({
+        url:`/mp/articles/${data}`,
+        method:'DELETE',
+    })
+}
+
+export function getArticleDetailAPI(data){
+    return request({
+        url:`/mp/articles/${data}`,
+        method:'Get',
+    })
+}
